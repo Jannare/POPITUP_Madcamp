@@ -16,7 +16,7 @@ const getConn = async() => {
 };
 
 // 특정 pid에 해당하는 데이터를 가져오는 라우터
-router.get('get/:p_id', async (req, res) => {
+router.get('/get/:p_id', async (req, res) => {
   const p_id = req.params.p_id; // URL 파라미터에서 pid 값을 가져옴
   const conn = await getConn();
 
