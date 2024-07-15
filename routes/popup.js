@@ -37,19 +37,21 @@ router.get('/get/:p_id', async (req, res) => {
 
 
   try {
-    // pimageurl 필드를 업데이트
+    // p_imageurl 필드를 업데이트
     await conn.query(updateQuery, [filepath, p_id]);
     await conn.query(updateStatusQuery, [p_id]);
-
 
     // 업데이트된 데이터를 선택
     let [rows, fields] = await conn.query(selectQuery, [p_id]);
     conn.release();
-    console.log(rows)
-
 
     if (rows.length > 0) {
-      res.send(rows[0]); // 결과 행을 포함해 데이터 전송
+      // 날짜 필드를 년-월-일 형식으로 변환
+      const row = rows[0];
+      row.p_startdate = row.p_startdate.toISOString().split('T')[0];
+      row.p_enddate = row.p_enddate.toISOString().split('T')[0];
+
+      res.send(row); // 결과 행을 포함해 데이터 전송
     } else {
       res.status(404).send({ message: 'Record not found' });
     }
@@ -58,5 +60,6 @@ router.get('/get/:p_id', async (req, res) => {
     res.status(500).send({ message: 'Error fetching data', error });
   }
 });
+
 
 module.exports = router;
