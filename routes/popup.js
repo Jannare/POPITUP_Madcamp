@@ -15,16 +15,16 @@ const getConn = async() => {
   return await pool.getConnection(async (conn) => conn);
 };
 
-// 특정 pid에 해당하는 데이터를 가져오는 라우터
+// 특정 p_id에 해당하는 데이터를 가져오는 라우터
 router.get('/get/:p_id', async (req, res) => {
   const p_id = req.params.p_id; // URL 파라미터에서 pid 값을 가져옴
   const conn = await getConn();
 
-  const selectQuery = 'SELECT p_id, p_name, p_location, p_latitude, p_longitude, p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl FROM popupstore WHERE p_id = ?';
+  const selectQuery = 'SELECT p_id, p_name, p_location, p_region, p_latitude, p_longitude, p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl FROM popupstore WHERE p_id = ?';
   const filename = `${p_id}image.png`;
   const filepath = `/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
 
-  const updateQuery = 'UPDATE popupstore SET pimageurl = ? WHERE p_id = ?';
+  const updateQuery = 'UPDATE popupstore SET p_imageurl = ? WHERE p_id = ?';
   const updateStatusQuery = `
   UPDATE popupstore
   SET pp_status = CASE
