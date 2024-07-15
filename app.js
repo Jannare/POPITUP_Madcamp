@@ -3,10 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var testRouter = require('./routes/test');
+const popupRouter = require('./routes/popup'); // 실제 라우터 파일 경로
+const popup_keywordsRouter = require('./routes/popup_keywords'); // 실제 라우터 파일 경로
+
 
 var app = express();
 
@@ -22,15 +23,18 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.urlencoded({ extended: true })); // URL-encoded 바디 파싱
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/test', testRouter);
+app.use('/api/user', usersRouter);
+app.use('/api/popup', popupRouter);
+app.use('/api/popup/keyword/', popup_keywordsRouter);
 
 // /user/:id 쳤을 때 id를 보냄
 // app.get('/user/:id', (req, res) => {
