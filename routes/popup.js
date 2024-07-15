@@ -29,7 +29,7 @@ router.get('/get/:p_id', async (req, res) => {
   UPDATE popupstore
   SET p_status = CASE
       WHEN CURDATE() < p_startdate THEN '예정'
-      WHEN CURDATE() BETWEEN p_startdate AND enddate THEN '진행중'
+      WHEN CURDATE() BETWEEN p_startdate AND p_enddate THEN '진행중'
       WHEN CURDATE() > p_enddate THEN '종료'
   END
   WHERE p_id = ?;`;
@@ -57,10 +57,10 @@ router.get('/get/:p_id', async (req, res) => {
       };
       
       
-      row.p_startdate = formatDate(p_startdate);
-      row.p_enddate = formatDate(p_enddate);
+      // row.p_startdate = formatDate(p_startdate);
+      // row.p_enddate = formatDate(p_enddate);
       conn.release();
-
+      res.status(200).send(rows[0]); // 결과 행을 포함해 데이터 전송
     } else {
       res.status(404).send({ message: 'Record not found' });
     }
