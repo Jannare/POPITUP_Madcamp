@@ -22,7 +22,7 @@ router.get('/get/:p_id', async (req, res) => {
 
   const selectQuery = 'SELECT p_id, p_name, p_location, p_region, p_latitude, p_longitude, p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl FROM popupstore WHERE p_id = ?';
   const filename = `${p_id}image.png`;
-  const filepath = `http://3.34.41.15:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
+  const filepath = `http://3.34.195.223:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
 
   const updateQuery = 'UPDATE popupstore SET p_imageurl = ? WHERE p_id = ?';
   const updateStatusQuery = `
