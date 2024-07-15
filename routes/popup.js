@@ -91,12 +91,7 @@ router.get('/date', async (req, res) => {
   try {
     // 주어진 date로 쿼리 실행
     const [rows, fields] = await conn.query(selectQuery, [date]);
-    
-    if (rows.length > 0) {
-      res.status(200).send(rows); // 조건을 만족하는 레코드 전송
-    } else {
-      res.status(404).send({ message: 'No records found' });
-    }
+    res.status(200).send(rows); // 조건을 만족하는 레코드 전송
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Internal server error' });
