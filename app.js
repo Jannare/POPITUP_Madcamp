@@ -7,6 +7,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const popupRouter = require('./routes/popup'); // 실제 라우터 파일 경로
 const popup_keywordsRouter = require('./routes/popup_keywords'); // 실제 라우터 파일 경로
+const cors = require('cors');
 
 
 var app = express();
@@ -25,7 +26,7 @@ app.use(function(req, res, next) {
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
