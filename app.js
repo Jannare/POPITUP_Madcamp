@@ -36,26 +36,6 @@ app.use('/api/user', usersRouter);
 app.use('/api/popup', popupRouter);
 app.use('/api/popup/keyword/', popup_keywordsRouter);
 
-// /user/:id 쳤을 때 id를 보냄
-// app.get('/user/:id', (req, res) => {
-//   const param = req.params //Parameter  
-//   console.log(param)
-//   console.log(param.id)
-
-//   res.json({'animal': param.id})
-
-// });
-
-// mysql-node.js
-// app.get('/testSelect', async (req, res) => {
-//   const conn = await getConn();
-//   const query = 'SELECT TEST_ID, TEST_TXT FROM TB_TEST';
-//   let [rows, fields] = await conn.query(query, []);
-//   conn.release();
-
-//   res.send(rows);
-// });
-// mysql-node.js
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
