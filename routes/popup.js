@@ -79,8 +79,8 @@ router.get('/get/:p_id', async (req, res) => {
 });
 
 
-router.get('/date', async (req, res) => {
-  const { date } = req.query; // URL 쿼리 파라미터에서 date 값을 가져옴
+router.post('/date', async (req, res) => {
+  const { date } = req.body; // URL 쿼리 파라미터에서 date 값을 가져옴
   const conn = await getConn();
 
   const selectQuery = `
