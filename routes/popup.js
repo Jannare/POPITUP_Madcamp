@@ -27,7 +27,7 @@ router.get('/get/:p_id', async (req, res) => {
   const updateQuery = 'UPDATE popupstore SET p_imageurl = ? WHERE p_id = ?';
   const updateStatusQuery = `
   UPDATE popupstore
-  SET pp_status = CASE
+  SET p_status = CASE
       WHEN CURDATE() < p_startdate THEN '예정중'
       WHEN CURDATE() BETWEEN p_startdate AND p_enddate THEN '진행중'
       WHEN CURDATE() > p_enddate THEN '종료'
