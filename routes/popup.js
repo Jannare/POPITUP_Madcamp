@@ -79,5 +79,34 @@ router.get('/get/:p_id', async (req, res) => {
 });
 
 
+router.post('/date', async (req, res) => {
+  const {date} = req.body;
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT * FROM popupstore 
+    WHERE ? BETWEEN p_startdate AND p_enddate;
+  `;
+
+  try {
+    // 주어진 date로 쿼리 실행
+    const [rows, fields] = await conn.query(selectQuery, [date]);
+    
+    if (rows.length > 0) {
+
+      res.status(200).send(rows); // 조건을 만족하는 레코드 전송
+    } else {
+      res.status(404).send({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
+
+
+
 
 module.exports = router;
