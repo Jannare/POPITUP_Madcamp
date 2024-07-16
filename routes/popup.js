@@ -118,9 +118,9 @@ router.post('/checkFavorite', async (req, res) => {
     const [rows] = await conn.query(selectQuery, [u_id]);
     
     if (rows.length > 0) {
-      const response = {
-        p_id: rows[0].p_id // Access u_interest from the first row in rows array
-      };
+      const p_ids = rows.map(row => row.p_id);
+      const response = { p_id: p_ids };
+      
       res.status(200).json(response);
     } else {
       res.status(404).json({ message: 'No records found' });
