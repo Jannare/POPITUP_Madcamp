@@ -120,8 +120,41 @@ router.post('/date', async (req, res) => {
 
 router.post('/myFavorite', async (req, res) => {
   const { u_id} = req.body;
+  console.log('u_id:', u_id); // u_id 값을 터미널에 출력
+  const conn = await getConn();
+  const selectQuery = 'SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1';
+
+
+  try {
+    const [rows] = await conn.query(selectQuery, [u_id]);
+    
+    if (rows.length > 0) {
+      const p_ids = rows.map(row => row.p_id); // p_id 값들을 배열로 추출
+      const placeholder = p_ids.map(() => '?').join(', '); // p_id 개수에 맞는 placeholder 생성
+
+      const selectPopupQuery = `
+        SELECT * FROM popupstore WHERE p_id IN (${placeholder})
+      `;
+
+      const [popupRows] = await conn.query(selectPopupQuery, p_ids);
+      res.status(200).json(popupRows);
+    } else {
+      res.status(404).json({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
+
+router.post('/myPopupstore', async (req, res) => {
+  const {u_id} = req.body;
+  console.log('u_id:', u_id); // u_id 값을 터미널에 출력
   const conn = await getConn();
   const selectQuery = 'SELECT p_id FROM popupstore_interest WHERE u_id = ?';
+  
 
   try {
     const [rows] = await conn.query(selectQuery, [u_id]);
