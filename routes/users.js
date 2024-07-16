@@ -95,25 +95,31 @@ router.post('/kakaologin', async (req, res) => {
     conn.release();
   }
 });
-
-router.post('/checkFavorite', async (req, res) => {
-  const { u_id, p_id } = req.body;
+//내가수정함
+router.post('/Favorite', async (req, res) => {
+  const { u_id } = req.body;
   const conn = await getConn();
 
   const selectQuery = `
-    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1
+    SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
   `;
-
-
+  const selectPopup = `SELECT * FROM popupstore WHERE p_id = ?`;
 
   try {
-    const [rows] = await conn.query(selectQuery, [u_id, p_id]);
+    const [rows] = await conn.query(selectQuery, [u_id]);
     
     if (rows.length > 0) {
-      const response = {
-        u_interest: rows[0].u_interest // Access u_interest from the first row in rows array
-      };
-      res.status(200).json(response);
+      // p_id 값들을 배열로 추출
+      const p_ids = rows.map(row => row.p_id);
+
+      // 각 p_id에 대해 popupstore 테이블에서 데이터를 가져옴
+      const popupPromises = p_ids.map(p_id => conn.query(selectPopup, [p_id]));
+      const popupResults = await Promise.all(popupPromises);
+
+      // 결과를 하나의 배열로 합침
+      const popupData = popupResults.map(result => result[0]).flat();
+
+      res.status(200).json(popupData);
     } else {
       res.status(404).json({ message: 'No records found' });
     }
@@ -124,5 +130,7 @@ router.post('/checkFavorite', async (req, res) => {
     conn.release();
   }
 });
+
+//내가수정함
 
 module.exports = router;

@@ -107,21 +107,19 @@ router.post('/date', async (req, res) => {
 });
 
 router.post('/checkFavorite', async (req, res) => {
-  const { u_id, p_id } = req.body;
+  const { u_id } = req.body;
   const conn = await getConn();
 
   const selectQuery = `
-    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1
+    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
   `;
 
-
-
   try {
-    const [rows] = await conn.query(selectQuery, [u_id, p_id]);
+    const [rows] = await conn.query(selectQuery, [u_id]);
     
     if (rows.length > 0) {
       const response = {
-        u_interest: rows[0].u_interest // Access u_interest from the first row in rows array
+        p_id: rows[0].p_id // Access u_interest from the first row in rows array
       };
       res.status(200).json(response);
     } else {
