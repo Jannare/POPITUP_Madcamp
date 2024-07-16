@@ -51,7 +51,7 @@ router.get('/getAll', async (req, res) => {
 });
 
 
-const a = Date.now() + path.extname(file.originalname);
+// const a = Date.now() + path.extname(file.originalname);
 // 특정 p_id에 해당하는 데이터를 가져오는 라우터
 router.get('/get/:p_id', async (req, res) => {
   const p_id = req.params.p_id; // URL 파라미터에서 pid 값을 가져옴
@@ -59,7 +59,7 @@ router.get('/get/:p_id', async (req, res) => {
   
 
   const selectQuery = 'SELECT * FROM popupstore WHERE p_id = ?';
-  const filename = `${a}`;
+  // const filename = `${a}`;
   const filepath = `http://3.39.143.119:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
 
   const updateQuery = 'UPDATE popupstore SET p_imageurl = ? WHERE p_id = ?';
