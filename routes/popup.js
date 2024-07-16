@@ -17,6 +17,7 @@ const getConn = async() => {
 
 router.get('/getAll', async (req, res) => {
   const conn = await getConn();
+  const p_id = 'SELECT '
 
   const selectAllQuery = 'SELECT * FROM popupstore';
 
