@@ -173,7 +173,14 @@ router.post('/toggleFavorite', async (req, res) => {
       // 업데이트 후 변경된 레코드를 다시 선택
       const [updatedRows] = await conn.query(selectQuery, [u_id, p_id]);
 
-      res.status(200).json(updatedRows);
+      // 필요한 정보를 하나의 객체로 응답
+      const response = {
+        u_id: updatedRows[0].u_id,
+        p_id: updatedRows[0].p_id,
+        count: updatedRows[0].count,
+        u_interest: updatedRows[0].u_interest,
+      };
+      res.status(200).json(response);
     } else {
       res.status(404).json({ message: 'No records found' });
     }
