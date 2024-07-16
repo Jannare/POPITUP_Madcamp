@@ -157,7 +157,7 @@ router.post('/toggleFavorite', async (req, res) => {
 
   const insertQuery = `
     INSERT INTO popupstore_interest (u_id, p_id, u_interest, count)
-    VALUES (?, ?, 'TRUE', 1)
+    VALUES (?, ?, 1, 1)
   `;
 
   try {
