@@ -282,6 +282,21 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
   const formattedStartDate = formatDate(p_startdate);
   const formattedEndDate = formatDate(p_enddate);
 
+  // p_status를 계산
+  let p_status;
+  const today = new Date();
+  const startDate = new Date(p_startdate);
+  const endDate = new Date(p_enddate);
+
+  if (today < startDate) {
+    p_status = '예정';
+  } else if (today >= startDate && today <= endDate) {
+    p_status = '진행중';
+  } else if (today > endDate) {
+    p_status = '종료';
+  }
+
+
 
   let p_region = null;
   if (p_location.includes('서울')) {
@@ -301,32 +316,25 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
   let p_longitude = null;
 
 
-  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
+  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
   
   const conn = await getConn();
 
-  const updateStatusQuery = `
-    UPDATE popupstore
-    SET p_status = CASE
-        WHEN CURDATE() < p_startdate THEN '예정'
-        WHEN CURDATE() BETWEEN p_startdate AND p_enddate THEN '진행중'
-        WHEN CURDATE() > p_enddate THEN '종료'
-    END
-    WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ? AND p_intro = ? AND p_detail = ?;
-  `;
 
   const selectQuery = `
     SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
   `;
 
-  const insertQuery = 'INSERT INTO popupstore (u_id, p_name, p_location,p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_status, p_latitude,) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  
+  const insertQuery = `
+  INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
   try {
     const [rows] = await conn.query(selectQuery, [p_name, p_location, formattedEndDate, formattedEndDate]);
     
     if (rows.length === 0) {
       await conn.query(insertQuery, [u_id, p_name, p_location, p_startdate, p_enddate, p_status, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude]);
-      await conn.query(updateStatusQuery, [p_name, p_location, formattedEndDate, formattedEndDate, p_intro, p_detail]); 
       res.status(201).json({ message: 'popupInfo added successfully' });
     } else {
       res.status(409).json({ message: 'popup already exists' });
