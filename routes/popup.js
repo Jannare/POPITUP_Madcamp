@@ -46,7 +46,7 @@ router.get('/get/:p_id', async (req, res) => {
 
   const selectQuery = 'SELECT * FROM popupstore WHERE p_id = ?';
   const filename = `${p_id}image.jpg`;
-  const filepath = `http://3.34.195.223:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
+  const filepath = `http://43.200.69.75:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
 
   const updateQuery = 'UPDATE popupstore SET p_imageurl = ? WHERE p_id = ?';
   const updateStatusQuery = `
@@ -135,6 +135,29 @@ router.post('/checkFavorite', async (req, res) => {
   }
 });
 
+router.post('/region', async (req, res) => {
+  const { p_region } = req.body;
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT * FROM popupstore WHERE p_region = ?
+  `;
+
+  try {
+    const [rows] = await conn.query(selectQuery, [p_region]);
+    
+    if (rows.length > 0) {
+      res.status(200).json(rows);
+    } else {
+      res.status(404).json({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
 
 router.post('/toggleFavorite', async (req, res) => {
   const { u_id, p_id } = req.body;

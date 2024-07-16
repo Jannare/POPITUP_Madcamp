@@ -96,4 +96,33 @@ router.post('/kakaologin', async (req, res) => {
   }
 });
 
+router.post('/checkFavorite', async (req, res) => {
+  const { u_id, p_id } = req.body;
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1
+  `;
+
+
+
+  try {
+    const [rows] = await conn.query(selectQuery, [u_id, p_id]);
+    
+    if (rows.length > 0) {
+      const response = {
+        u_interest: rows[0].u_interest // Access u_interest from the first row in rows array
+      };
+      res.status(200).json(response);
+    } else {
+      res.status(404).json({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
+
 module.exports = router;
