@@ -119,7 +119,7 @@ router.post('/toggleFavorite', async (req, res) => {
     
     if (rows.length > 0) {
       // 데이터를 JSON 형태로 전송
-      res.status(200).json(rows);
+      res.status(200).send(rows);
     } else {
       res.status(404).json({ message: 'No records found' });
     }
