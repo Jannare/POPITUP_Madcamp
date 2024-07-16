@@ -106,32 +106,6 @@ router.post('/date', async (req, res) => {
   }
 });
 
-router.post('/checkFavorite', async (req, res) => {
-  const { u_id } = req.body;
-  const conn = await getConn();
-
-  const selectQuery = `
-    SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
-  `;
-
-  try {
-    const [rows] = await conn.query(selectQuery, [u_id]);
-    
-    if (rows.length > 0) {
-      const p_ids = rows.map(row => row.p_id);
-      const response = { p_id: p_ids };
-      
-      res.status(200).json(response);
-    } else {
-      res.status(404).json({ message: 'No records found' });
-    }
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    conn.release();
-  }
-});
 
 router.post('/region', async (req, res) => {
   const { p_region } = req.body;

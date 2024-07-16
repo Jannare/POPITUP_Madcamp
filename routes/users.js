@@ -41,6 +41,7 @@ const getConn = async() => {
   return await pool.getConnection(async (conn) => conn);
 };
 
+
 router.post('/login', async (req, res) => {
   const { u_id, u_password } = req.body;
   const conn = await getConn();
@@ -55,6 +56,27 @@ router.post('/login', async (req, res) => {
       if (user.u_password === u_password) {
         const { u_id, u_nickname } = user;
         res.status(200).json({ u_id, u_nickname });
+        const selectQuery = `
+        SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
+      `;
+    
+      try {
+        if (rows.length > 0) {
+          const p_ids = rows.map(row => row.p_id);
+          const response = { p_id: p_ids };
+          
+          res.status(200).json(u_id, u_nickname, response);
+        } else {
+          res.status(404).json({ message: 'No records found' });
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      } finally {
+        conn.release();
+      };
+
+
       } else {
         res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
       }
