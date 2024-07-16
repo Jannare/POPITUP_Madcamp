@@ -225,7 +225,29 @@ router.post('/toggleFavorite', async (req, res) => {
 });
 
 
+router.post('/review', async (req, res) => {
+  const { p_id } = req.body;
+  const conn = await getConn();
 
+  const selectQuery = `
+    SELECT u_nickname, grade, review FROM popupstore_users_reviews WHERE p_id = ?
+  `;
+
+  try {
+    const [rows] = await conn.query(selectQuery, [p_id]);
+    
+    if (rows.length > 0) {
+      res.status(200).json(rows);
+    } else {
+      res.status(404).json({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
 
 
 
