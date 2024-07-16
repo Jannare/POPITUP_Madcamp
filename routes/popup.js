@@ -81,7 +81,7 @@ router.get('/get/:p_id', async (req, res) => {
 
 
 router.post('/date', async (req, res) => {
-  const { date } = req.body; // URL 쿼리 파라미터에서 date 값을 가져옴
+  const { date } = req.body; //
   const conn = await getConn();
 
   const selectQuery = `
@@ -106,7 +106,7 @@ router.post('/date', async (req, res) => {
   }
 });
 
-router.post('/toggleFavorite', async (req, res) => {
+router.post('/checkFavorite', async (req, res) => {
   const { u_id } = req.body;
   const conn = await getConn();
 
@@ -118,7 +118,6 @@ router.post('/toggleFavorite', async (req, res) => {
     const [rows] = await conn.query(selectQuery, [u_id]);
     
     if (rows.length > 0) {
-      // 데이터를 JSON 형태로 전송
       res.status(200).send(rows);
     } else {
       res.status(404).json({ message: 'No records found' });
@@ -131,6 +130,91 @@ router.post('/toggleFavorite', async (req, res) => {
   }
 });
 
+
+router.post('/toggleFavorite', async (req, res) => {
+  const { u_id, p_id } = req.body;
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT * FROM popupstore_interest WHERE u_id = ? AND p_id = ?
+  `;
+
+  router.post('/toggleFavorite', async (req, res) => {
+  const { u_id, p_id } = req.body;
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT * FROM popupstore_interest WHERE u_id = ? AND p_id = ?
+  `;
+  
+  const updateQuery = `
+  UPDATE popupstore_interest
+  SET u_interest = CASE WHEN u_interest = 'true' THEN 'false' ELSE 'true' END
+  WHERE u_id = ? AND p_id = ?
+`;
+
+
+  try {
+    const [rows] = await conn.query(selectQuery, [u_id,p_id]);
+    
+    if (rows.length > 0) {
+      res.status(200).send(rows);
+    } else {
+      res.status(404).json({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
+
+
+const countTrueQuery = `
+    SELECT COUNT(*) as true_count FROM popupstore_interest WHERE p_id = ? AND u_interest = 'TRUE'
+  `;
+
+  const updateCountQuery = `
+  UPDATE popupstore_interest
+  SET count = ?
+  WHERE p_id = ?
+`;
+
+
+  const updateQuery = `
+  UPDATE popupstore_interest
+  SET u_interest = CASE WHEN u_interest = 'TRUE' THEN 'FALSE' ELSE 'TRUE' END
+  WHERE u_id = ? AND p_id = ?
+`;
+
+
+try {
+  // u_id와 p_id가 일치하는 행 선택
+  const [rows] = await conn.query(selectQuery, [u_id, p_id]);
+  
+  if (rows.length > 0) {
+    // p_id가 일치하고 u_interest가 'true'인 행의 수를 셈
+    const [countRows] = await conn.query(countTrueQuery, [p_id]);
+    const trueCount = countRows[0].true_count;
+
+    // count 값을 업데이트
+    await conn.query(updateCountQuery, [trueCount, p_id]);
+
+    // 업데이트 후 변경된 레코드를 다시 선택
+    const [updatedRows] = await conn.query(selectQuery, [u_id, p_id]);
+
+    res.status(200).json(updatedRows);
+  } else {
+    res.status(404).json({ message: 'No records found' });
+  }
+} catch (error) {
+  console.error('Error fetching data:', error);
+  res.status(500).json({ error: 'Internal server error' });
+} finally {
+  conn.release();
+}
+});
 
 
 
