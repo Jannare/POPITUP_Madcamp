@@ -153,7 +153,7 @@ router.post('/myPopupstore', async (req, res) => {
   const {u_id} = req.body;
   console.log('u_id:', u_id); // u_id 값을 터미널에 출력
   const conn = await getConn();
-  const selectQuery = 'SELECT p_id FROM popupstore_interest WHERE u_id = ?';
+  const selectQuery = 'SELECT p_id FROM popupstore WHERE u_id = ?';
   
 
   try {
