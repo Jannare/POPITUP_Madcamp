@@ -268,7 +268,7 @@ router.post('/review/post', async (req, res) => {
   }
 });
 
-rorouter.post('/store/post', upload.single('p_image'), async (req, res) => {
+router.post('/store/post', upload.single('p_image'), async (req, res) => {
   const { p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_category, p_hour } = req.body;
   const p_imageurl = req.file ? `${req.protocol}://${req.get('host')}/public/images/${req.file.filename}` : null;
 
