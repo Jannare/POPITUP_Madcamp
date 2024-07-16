@@ -118,7 +118,11 @@ router.post('/checkFavorite', async (req, res) => {
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
     
     if (rows.length > 0) {
-      res.status(200).send(rows);
+      const response = {
+        u_interest: updatedRows[0].u_interest
+      };
+
+      res.status(200).json(response);
     } else {
       res.status(404).json({ message: 'No records found' });
     }
