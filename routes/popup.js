@@ -107,27 +107,15 @@ router.post('/date', async (req, res) => {
 });
 
 router.post('/checkFavorite', async (req, res) => {
-  const { u_id } = req.body;
+  const { u_id, p_id } = req.body;
   const conn = await getConn();
 
   const selectQuery = `
-    SELECT * FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
+    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1 
   `;
 
-  const updateQuery = `
-  UPDATE popupstore_interest
-  SET u_interest = NOT u_interest
-  WHERE u_id = ? AND p_id = ?
-`;
-
-const updateCountQuery = `
-  UPDATE popupstore_interest
-  SET count = ?
-  WHERE p_id = ?
-`;
-
   try {
-    const [rows] = await conn.query(selectQuery, [u_id]);
+    const [rows] = await conn.query(selectQuery, [u_id, p_id]);
     
     if (rows.length > 0) {
       res.status(200).send(rows);
