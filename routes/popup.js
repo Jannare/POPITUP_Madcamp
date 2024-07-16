@@ -180,7 +180,7 @@ router.post('/toggleFavorite', async (req, res) => {
         count: updatedRows[0].count,
         u_interest: updatedRows[0].u_interest,
       };
-      res.status(200).json(response);
+      res.status(200).json(updatedRows);
     } else {
       res.status(404).json({ message: 'No records found' });
     }
