@@ -260,7 +260,7 @@ router.post('/review/post', async (req, res) => {
     SELECT u_nickname, grade, review FROM popupstore_users_reviews WHERE u_id = ? AND p_id = ?
   `;
 
-  const insertQuery = 'INSERT INTO popupstore_users_reviews (p_id, u_id, u_nickname, grade, review) VALUES (?, ?, ?, ?)';
+  const insertQuery = 'INSERT INTO popupstore_users_reviews (p_id, u_id, u_nickname, grade, review) VALUES (?, ?, ?, ?, ?)';
 
   try {
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
