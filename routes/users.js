@@ -54,6 +54,10 @@ router.post('/login', async (req, res) => {
     if (rows.length > 0) {
       const user = rows[0];
       if (user.u_password === u_password) {
+        const updateUserPidsQuery = `
+        UPDATE Users SET p_id = ? WHERE u_id = ?
+        `;
+
         const { u_id, u_nickname } = user;
 
         // 로그인 성공 후 즐겨찾기 데이터를 가져옴
@@ -65,8 +69,14 @@ router.post('/login', async (req, res) => {
         // p_id 값들을 배열로 저장
         const p_ids = favoriteRows.map(row => row.p_id);
 
+        // p_ids 배열을 JSON 문자열로 변환
+        const p_ids_json = JSON.stringify(p_ids);
+
+        // Users 테이블의 p_id 컬럼을 업데이트
+        await conn.query(updateUserPidsQuery, [p_ids_json, u_id]);
+
         // 응답에 사용자 정보와 즐겨찾기 배열 포함
-        res.status(200).json({ u_id, u_nickname, p_id: p_ids });
+        res.status(200).json({ u_id, u_nickname, p_ids });
       } else {
         res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
       }
