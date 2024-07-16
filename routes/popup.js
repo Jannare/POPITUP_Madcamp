@@ -175,12 +175,11 @@ router.post('/toggleFavorite', async (req, res) => {
 
       // 필요한 정보를 하나의 객체로 응답
       const response = {
-        u_id: updatedRows[0].u_id,
-        p_id: updatedRows[0].p_id,
+        u_id: updatedRows[0].u_id, p_id: updatedRows[0].p_id,
         count: updatedRows[0].count,
-        u_interest: updatedRows[0].u_interest,
+        u_interest: updatedRows[0].u_interest
       };
-      res.status(200).json(updatedRows);
+      res.status(200).json(response);
     } else {
       res.status(404).json({ message: 'No records found' });
     }
