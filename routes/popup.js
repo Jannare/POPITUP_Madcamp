@@ -144,10 +144,10 @@ router.post('/toggleFavorite', async (req, res) => {
   `;
 
   const updateQuery = `
-  UPDATE popupstore_interest
-  SET u_interest = NOT u_interest
-  WHERE u_id = ? AND p_id = ?
-`;
+    UPDATE popupstore_interest
+    SET u_interest = NOT u_interest
+    WHERE u_id = ? AND p_id = ?
+  `;
 
   const updateCountQuery = `
     UPDATE popupstore_interest
@@ -165,7 +165,7 @@ router.post('/toggleFavorite', async (req, res) => {
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
     
     if (rows.length > 0) {
-      // 클릭한 유저의 TRUE,FALSE를 바꿈
+      // 클릭한 유저의 u_interest 값을 토글
       await conn.query(updateQuery, [u_id, p_id]);
     } else {
       // 새로운 레코드 추가
@@ -197,6 +197,7 @@ router.post('/toggleFavorite', async (req, res) => {
     conn.release();
   }
 });
+
 
 
 
