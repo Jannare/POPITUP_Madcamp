@@ -268,24 +268,28 @@ router.post('/review/post', async (req, res) => {
   }
 });
 
-router.post('/store/post', upload.single('p_image'), async (req, res) => {
+// router.post('/store/post', upload.single('p_image'), async (req, res) => {
+  router.post('/store/post', async (req, res) => {
   const { p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_category, p_hour } = req.body;
-  const p_imageurl = req.file ? `${req.protocol}://${req.get('host')}/public/images/${req.file.filename}` : null;
+  // const p_imageurl = req.file ? `${req.protocol}://${req.get('host')}/public/images/${req.file.filename}` : null;
 
   console.log( p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour  ); // p_id 값을 터미널에 출력
+  console.log( p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_category, p_hour  ); // p_id 값을 터미널에 출력
   const conn = await getConn();
 
   const selectQuery = `
     SELECT p_name, p_location, FROM popupstore_users_reviews WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
   `;
 
-  const insertQuery = 'INSERT INTO popupstore (p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  // const insertQuery = 'INSERT INTO popupstore (p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const insertQuery = 'INSERT INTO popupstore (p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_category,p_hour) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 
   try {
     const [rows] = await conn.query(selectQuery, [p_name, p_location, p_startdate, p_enddate]);
     
     if (rows.length === 0) {
-      await conn.query(insertQuery, [p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour]);
+     // await conn.query(insertQuery, [p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour]);
+     await conn.query(insertQuery, [p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_category, p_hour]);
       res.status(201).json({message: 'popupInfo added successfully'})
     } else{
       res.status(409).json({message: 'popup already exists'});
