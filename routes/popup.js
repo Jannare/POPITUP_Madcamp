@@ -317,7 +317,7 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
     SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
   `;
 
-  const insertQuery = 'INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const insertQuery = 'INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
   
   try {
     const [rows] = await conn.query(selectQuery, [p_name, p_location, formattedEndDate, formattedEndDate]);
