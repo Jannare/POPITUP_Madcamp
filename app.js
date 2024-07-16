@@ -7,6 +7,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const popupRouter = require('./routes/popup'); // 실제 라우터 파일 경로
 const popup_keywordsRouter = require('./routes/popup_keywords'); // 실제 라우터 파일 경로
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
 
@@ -34,6 +35,8 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 바디 파싱
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/popup', popupRouter);
 app.use('/api/popup/keyword/', popup_keywordsRouter);
 
