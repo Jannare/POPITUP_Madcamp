@@ -111,8 +111,20 @@ router.post('/checkFavorite', async (req, res) => {
   const conn = await getConn();
 
   const selectQuery = `
-    SELECT * FROM popupstore_interest WHERE u_id = ?
+    SELECT * FROM popupstore_interest WHERE u_id = ? AND u_interest = 0
   `;
+
+  const updateQuery = `
+  UPDATE popupstore_interest
+  SET u_interest = NOT u_interest
+  WHERE u_id = ? AND p_id = ?
+`;
+
+const updateCountQuery = `
+  UPDATE popupstore_interest
+  SET count = ?
+  WHERE p_id = ?
+`;
 
   try {
     const [rows] = await conn.query(selectQuery, [u_id]);
