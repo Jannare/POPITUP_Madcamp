@@ -334,7 +334,7 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
     const [rows] = await conn.query(selectQuery, [p_name, p_location, formattedEndDate, formattedEndDate]);
     
     if (rows.length === 0) {
-      await conn.query(insertQuery, [u_id, p_name, p_location, p_startdate, p_enddate, p_status, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude]);
+      await conn.query(insertQuery, [u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude]);
       res.status(201).json({ message: 'popupInfo added successfully' });
     } else {
       res.status(409).json({ message: 'popup already exists' });
