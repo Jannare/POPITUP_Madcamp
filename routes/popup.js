@@ -106,6 +106,31 @@ router.post('/date', async (req, res) => {
   }
 });
 
+router.post('/toggleFavorite', async (req, res) => {
+  const { u_id } = req.body;
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT * FROM popupstore_interest WHERE u_id = ?
+  `;
+
+  try {
+    const [rows] = await conn.query(selectQuery, [u_id]);
+    
+    if (rows.length > 0) {
+      // 데이터를 JSON 형태로 전송
+      res.status(200).json(rows);
+    } else {
+      res.status(404).json({ message: 'No records found' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
+
 
 
 
