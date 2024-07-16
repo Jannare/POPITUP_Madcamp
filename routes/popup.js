@@ -126,7 +126,9 @@ router.post('/checkFavorite', async (req, res) => {
 
     if (rows.length > 0) {
       const p_ids = rows.map(row => row.p_id);
+      const response = { p_id: p_ids };
       
+      res.status(200).json(response);
       // Fetch p_interest from popupstore for each p_id
       for (const p_id of p_ids) {
         const [popupRows] = await conn.query(selectPopup, [p_id]);
