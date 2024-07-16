@@ -15,11 +15,10 @@ const getConn = async() => {
   return await pool.getConnection(async (conn) => conn);
 };
 
-router.get('/getAll', async (req, res) => {
+router.get('/get', async (req, res) => {
   const conn = await getConn();
-  const p_id = 'SELECT '
 
-  const selectAllQuery = 'SELECT * FROM popupstore';
+  const selectAllQuery = 'SELECT * FROM popupstore_users_reviews';
 
   try {
     const [rows, fields] = await conn.query(selectAllQuery);
@@ -113,13 +112,6 @@ router.post('/checkFavorite', async (req, res) => {
   const selectQuery = `
     SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1
   `;
-  const updateinterestQuery = `
-  UPDATE popupstore
-  SET p_interest = ?
-  WHERE p_id = ? AND u_id = ?
-`;
-  const countQuery = 'SELECT count FROM popupstore_interest WHERE u_id = ? AND p_id = ?'
-
 
   try {
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
@@ -128,7 +120,7 @@ router.post('/checkFavorite', async (req, res) => {
       const response = {
         u_interest: rows[0].u_interest // Access u_interest from the first row in rows array
       };
-      await conn.query(updateinterestQuery, [countQuery, u_id, p_id]);
+
       res.status(200).json(response);
     } else {
       res.status(404).json({ message: 'No records found' });

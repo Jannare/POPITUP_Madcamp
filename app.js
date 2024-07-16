@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var reviewRouter = require('./routes/popup_review');
 const popupRouter = require('./routes/popup'); // 실제 라우터 파일 경로
 const popup_keywordsRouter = require('./routes/popup_keywords'); // 실제 라우터 파일 경로
 const cors = require('cors');
@@ -34,6 +35,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 바디 파싱
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
+app.use('/api/review', reviewRouter);
 app.use('/api/popup', popupRouter);
 app.use('/api/popup/keyword/', popup_keywordsRouter);
 
