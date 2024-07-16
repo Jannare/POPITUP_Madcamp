@@ -283,7 +283,9 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
       WHEN CURDATE() BETWEEN p_startdate AND p_enddate THEN '진행중'
       WHEN CURDATE() > p_enddate THEN '종료'
   END
-  WHERE (p_name, p_location, p_startdate, p_enddate, p_intro, p_detail) VALUES (?, ?, ?, ?, ?, ?));`;
+  WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ? AND p_intro = ? AND p_detail = ?;
+`;
+
 
   const selectQuery = `
     SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
