@@ -144,11 +144,10 @@ router.post('/toggleFavorite', async (req, res) => {
   `;
 
   const updateQuery = `
-  UPDATE popupstore_interest
-  SET u_interest = CASE WHEN u_interest = 'TRUE' THEN 'FALSE' ELSE 'true' END
-  WHERE u_id = ? AND p_id = ?
-`;
-
+    UPDATE popupstore_interest
+    SET u_interest = CASE WHEN u_interest = 'TRUE' THEN 'FALSE' ELSE 'TRUE' END
+    WHERE u_id = ? AND p_id = ?
+  `;
 
   const updateCountQuery = `
     UPDATE popupstore_interest
@@ -156,33 +155,41 @@ router.post('/toggleFavorite', async (req, res) => {
     WHERE p_id = ?
   `;
 
+  const insertQuery = `
+    INSERT INTO popupstore_interest (u_id, p_id, u_interest, count)
+    VALUES (?, ?, 'TRUE', 1)
+  `;
+
   try {
     // u_id와 p_id가 일치하는 행 선택
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
     
     if (rows.length > 0) {
-      //클릭한 유저의 TRUE,FALSE를 바꿈
-      await conn.query(updateQuery, [u_id, p_id] )
-      // p_id가 일치하고 u_interest가 'true'인 행의 수를 셈
-      const [countRows] = await conn.query(countTrueQuery, [p_id]);
-      const trueCount = countRows[0].true_count;
-
-      // count 값을 업데이트
-      await conn.query(updateCountQuery, [trueCount, p_id]);
-
-      // 업데이트 후 변경된 레코드를 다시 선택
-      const [updatedRows] = await conn.query(selectQuery, [u_id, p_id]);
-
-      // 필요한 정보를 하나의 객체로 응답
-      const response = {
-        u_id: updatedRows[0].u_id, p_id: updatedRows[0].p_id,
-        count: updatedRows[0].count,
-        u_interest: updatedRows[0].u_interest
-      };
-      res.status(200).json(response);
+      // 클릭한 유저의 TRUE,FALSE를 바꿈
+      await conn.query(updateQuery, [u_id, p_id]);
     } else {
-      res.status(404).json({ message: 'No records found' });
+      // 새로운 레코드 추가
+      await conn.query(insertQuery, [u_id, p_id]);
     }
+
+    // p_id가 일치하고 u_interest가 'true'인 행의 수를 셈
+    const [countRows] = await conn.query(countTrueQuery, [p_id]);
+    const trueCount = countRows[0].true_count;
+
+    // count 값을 업데이트
+    await conn.query(updateCountQuery, [trueCount, p_id]);
+
+    // 변경된 레코드를 다시 선택
+    const [updatedRows] = await conn.query(selectQuery, [u_id, p_id]);
+
+    // 필요한 정보를 하나의 객체로 응답
+    const response = {
+      u_id: updatedRows[0].u_id,
+      p_id: updatedRows[0].p_id,
+      count: updatedRows[0].count,
+      u_interest: updatedRows[0].u_interest
+    };
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -190,6 +197,7 @@ router.post('/toggleFavorite', async (req, res) => {
     conn.release();
   }
 });
+
 
 
 
