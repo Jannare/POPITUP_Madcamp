@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
         const p_ids = favoriteRows.map(row => row.p_id);
 
         // 응답에 사용자 정보와 즐겨찾기 배열 포함
-        res.status(200).json({ u_id, u_nickname, favorites: p_ids });
+        res.status(200).json({ u_id, u_nickname, p_id: p_ids });
       } else {
         res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
       }
