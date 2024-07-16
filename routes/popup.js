@@ -113,12 +113,12 @@ router.post('/checkFavorite', async (req, res) => {
   const selectQuery = `
     SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1
   `;
-  const updateinterestQuery = `
-  UPDATE popupstore
-  SET p_interest = ?
-  WHERE u_id = ? AND p_id = ?
-`;
-  const countQuery = 'SELECT count FROM popupstore_interest WHERE u_id = ? AND p_id = ?'
+//   const updateinterestQuery = `
+//   UPDATE popupstore
+//   SET p_interest = ?
+//   WHERE u_id = ? AND p_id = ?
+// `;
+//   const countQuery = 'SELECT count FROM popupstore_interest WHERE u_id = ? AND p_id = ?'
 
 
   try {
@@ -128,7 +128,7 @@ router.post('/checkFavorite', async (req, res) => {
       const response = {
         u_interest: rows[0].u_interest // Access u_interest from the first row in rows array
       };
-      await conn.query(updateinterestQuery, [countQuery [u_id, p_id], u_id, p_id]);
+      // await conn.query(updateinterestQuery, [countQuery [u_id, p_id], u_id, p_id]);
       res.status(200).json(response);
     } else {
       res.status(404).json({ message: 'No records found' });
