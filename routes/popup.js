@@ -111,7 +111,7 @@ router.post('/checkFavorite', async (req, res) => {
   const conn = await getConn();
 
   const selectQuery = `
-    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
+    SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
   `;
 
   try {
