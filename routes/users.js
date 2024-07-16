@@ -55,7 +55,6 @@ router.post('/login', async (req, res) => {
       const user = rows[0];
       if (user.u_password === u_password) {
         const { u_id, u_nickname } = user;
-        res.status(200).json({ u_id, u_nickname });
         const selectQuery = `
         SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
       `;
