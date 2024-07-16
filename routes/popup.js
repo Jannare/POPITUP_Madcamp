@@ -301,7 +301,7 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
   let p_longitude = null;
 
 
-  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
+  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
   
   const conn = await getConn();
 
