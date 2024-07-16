@@ -111,7 +111,7 @@ router.post('/checkFavorite', async (req, res) => {
   const conn = await getConn();
 
   const selectQuery = `
-    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1 
+    SELECT u_interest FROM popupstore_interest WHERE u_id = ? AND p_id = ? AND u_interest = 1
   `;
 
   try {
@@ -119,7 +119,7 @@ router.post('/checkFavorite', async (req, res) => {
     
     if (rows.length > 0) {
       const response = {
-        u_interest: selectQuery.u_interest
+        u_interest: rows[0].u_interest // Access u_interest from the first row in rows array
       };
 
       res.status(200).json(response);
