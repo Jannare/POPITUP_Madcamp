@@ -121,7 +121,7 @@ router.post('/date', async (req, res) => {
 router.post('/myFavorite', async (req, res) => {
   const { u_id} = req.body;
   const conn = await getConn();
-  const selectQuery = 'SELECT p_id FROM Users WHERE u_id = ?';
+  const selectQuery = 'SELECT p_id FROM popupstore_interest WHERE u_id = ?';
 
   try {
     const [rows] = await conn.query(selectQuery, [u_id]);
@@ -238,7 +238,7 @@ router.post('/toggleFavorite', async (req, res) => {
   }
 });
 
-router.post('/my/review', async (req, res) => {
+router.post('/myReview', async (req, res) => {
   const conn = await getConn();
   const {u_id} = req.body;
   console.log('u_id:', u_id); // u_id 값을 터미널에 출력
