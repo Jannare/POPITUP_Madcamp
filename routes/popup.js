@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const mysql = require('mysql2/promise');
 const path = require('path');
+const multer =require('multer');
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -10,6 +11,18 @@ const pool = mysql.createPool({
     password: 'madcamp123',
     database: 'testDB'
 });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/images/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+
+  
+});
+const upload = multer({ storage: storage });
 
 const getConn = async() => {
   return await pool.getConnection(async (conn) => conn);
@@ -38,15 +51,16 @@ router.get('/getAll', async (req, res) => {
 });
 
 
-
+const a = Date.now() + path.extname(file.originalname);
 // 특정 p_id에 해당하는 데이터를 가져오는 라우터
 router.get('/get/:p_id', async (req, res) => {
   const p_id = req.params.p_id; // URL 파라미터에서 pid 값을 가져옴
   const conn = await getConn();
+  
 
   const selectQuery = 'SELECT * FROM popupstore WHERE p_id = ?';
-  const filename = `${p_id}image.jpg`;
-  const filepath = `http://43.200.69.75:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
+  const filename = `${a}`;
+  const filepath = `http://3.39.143.119:3000/images/${filename}`; // 로컬 파일 경로를 URL 경로로 변환
 
   const updateQuery = 'UPDATE popupstore SET p_imageurl = ? WHERE p_id = ?';
   const updateStatusQuery = `
@@ -60,7 +74,7 @@ router.get('/get/:p_id', async (req, res) => {
 
   try {
     // p_imageurl 필드를 업데이트
-    await conn.query(updateQuery, [filepath, p_id]);
+    // await conn.query(updateQuery, [filepath, p_id]); 이젠 굳이?
     await conn.query(updateStatusQuery, [p_id]);
 
     // 업데이트된 데이터를 선택
@@ -244,6 +258,37 @@ router.post('/review/post', async (req, res) => {
       res.status(201).json({message: 'Review added successfully'})
     } else{
       res.status(409).json({message: 'Review already exists'});
+    }
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    conn.release();
+  }
+});
+
+rorouter.post('/store/post', upload.single('p_image'), async (req, res) => {
+  const { p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_category, p_hour } = req.body;
+  const p_imageurl = req.file ? `${req.protocol}://${req.get('host')}/public/images/${req.file.filename}` : null;
+
+  console.log( p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour  ); // p_id 값을 터미널에 출력
+  const conn = await getConn();
+
+  const selectQuery = `
+    SELECT p_name, p_location, FROM popupstore_users_reviews WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
+  `;
+
+  const insertQuery = 'INSERT INTO popupstore (p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+  try {
+    const [rows] = await conn.query(selectQuery, [p_name, p_location, p_startdate, p_enddate]);
+    
+    if (rows.length === 0) {
+      await conn.query(insertQuery, [p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl,p_category,p_hour]);
+      res.status(201).json({message: 'popupInfo added successfully'})
+    } else{
+      res.status(409).json({message: 'popup already exists'});
     }
 
   } catch (error) {
