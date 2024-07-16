@@ -253,9 +253,12 @@ router.post('/review', async (req, res) => {
 
 router.post('/review/post', async (req, res) => {
   const { u_id, p_id, u_nickname, grade, review  } = req.body;
-  console.log(u_id, p_id, u_nickname, grade, review); // p_id 값을 터미널에 출력
+  console.log(  u_id, p_id, u_nickname, grade, review  ); // p_id 값을 터미널에 출력
   const conn = await getConn();
 
+  const selectQuery = `
+    SELECT u_nickname, grade, review FROM popupstore_users_reviews WHERE u_id = AND p_id = ?
+  `;
 
   const insertQuery = 'INSERT INTO popupstore_users_reviews (u_id, p_id, u_nickname, grade, review) VALUES (?, ?, ?, ?)';
 
@@ -263,7 +266,7 @@ router.post('/review/post', async (req, res) => {
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
     
     if (rows.length === 0) {
-      await conn.query(insertQuery, [u_id, p_id, u_nickname, grade, review]);
+      await conn.query(insertQuery, [u_id, p_id, grade, review]);
       res.status(201).json({message: 'Review added successfully'})
     } else{
       res.status(409).json({message: 'Review already exists'});
