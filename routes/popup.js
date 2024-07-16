@@ -210,7 +210,7 @@ router.post('/toggleFavorite', async (req, res) => {
   }
 });
 
-router.post('/myreview', async (req, res) => {
+router.post('/my/review', async (req, res) => {
   const conn = await getConn();
   const {u_id} = req.body;
   console.log('u_id:', u_id); // u_id 값을 터미널에 출력
