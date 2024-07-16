@@ -297,9 +297,11 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
   } else if (p_location.includes('부산')) {
     p_region = '부산광역시';
   } 
-    
+  let p_latitude = null;
+  let p_longitude = null;
 
-  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
+
+  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
   
   const conn = await getConn();
 
@@ -317,13 +319,13 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
     SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
   `;
 
-  const insertQuery = 'INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const insertQuery = 'INSERT INTO popupstore (u_id, p_name, p_location,p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_status, p_latitude,) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
   
   try {
     const [rows] = await conn.query(selectQuery, [p_name, p_location, formattedEndDate, formattedEndDate]);
     
     if (rows.length === 0) {
-      await conn.query(insertQuery, [u_id, p_name, p_location, formattedEndDate, formattedEndDate, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region]);
+      await conn.query(insertQuery, [u_id, p_name, p_location, p_startdate, p_enddate, p_status, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude]);
       await conn.query(updateStatusQuery, [p_name, p_location, formattedEndDate, formattedEndDate, p_intro, p_detail]); 
       res.status(201).json({ message: 'popupInfo added successfully' });
     } else {
