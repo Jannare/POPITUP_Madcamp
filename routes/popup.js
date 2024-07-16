@@ -268,10 +268,21 @@ router.post('/review/post', async (req, res) => {
   }
 });
 
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.toISOString().slice(0, 10); // "YYYY-MM-DD" 형식으로 변환
+};
+
+
 router.post('/store/post', upload.single('p_image'), async (req, res) => {
-  const { p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_simplelocation, p_category, p_hour } = req.body;
+  const {u_id, p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_simplelocation, p_category, p_hour } = req.body;
   const p_imageurl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
   
+  // 날짜 형식을 ISO 형식으로 변환
+  const formattedStartDate = formatDate(p_startdate);
+  const formattedEndDate = formatDate(p_enddate);
+
+
   let p_region = null;
   if (p_location.includes('서울')) {
     p_region = '서울특별시';
@@ -288,7 +299,7 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
   } 
     
 
-  console.log(p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
+  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
   
   const conn = await getConn();
 
@@ -306,14 +317,14 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
     SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
   `;
 
-  const insertQuery = 'INSERT INTO popupstore (p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const insertQuery = 'INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
   
   try {
-    const [rows] = await conn.query(selectQuery, [p_name, p_location, p_startdate, p_enddate]);
+    const [rows] = await conn.query(selectQuery, [p_name, p_location, formattedEndDate, formattedEndDate]);
     
     if (rows.length === 0) {
-      await conn.query(insertQuery, [p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region]);
-      await conn.query(updateStatusQuery, [p_name, p_location, p_startdate, p_enddate, p_intro, p_detail]); 
+      await conn.query(insertQuery, [u_id, p_name, p_location, formattedEndDate, formattedEndDate, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region]);
+      await conn.query(updateStatusQuery, [p_name, p_location, formattedEndDate, formattedEndDate, p_intro, p_detail]); 
       res.status(201).json({ message: 'popupInfo added successfully' });
     } else {
       res.status(409).json({ message: 'popup already exists' });
