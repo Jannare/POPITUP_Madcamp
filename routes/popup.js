@@ -119,7 +119,7 @@ router.post('/checkFavorite', async (req, res) => {
     
     if (rows.length > 0) {
       const response = {
-        u_interest: updatedRows[0].u_interest
+        u_interest: selectQuery[0].u_interest
       };
 
       res.status(200).json(response);
