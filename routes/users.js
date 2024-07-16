@@ -49,19 +49,24 @@ router.post('/login', async (req, res) => {
 
   try {
     console.log('Fetching user for login');
-    let [rows, fields] = await conn.query(query, [u_id]);
+    const [rows] = await conn.query(query, [u_id]);
     
     if (rows.length > 0) {
       const user = rows[0];
       if (user.u_password === u_password) {
         const { u_id, u_nickname } = user;
-        const selectQuery = `
-        SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
-      `;
-      const [favoriteRows] = await conn.query(selectQuery, [u_id]);
-      const p_ids = favoriteRows.map(row => row.p_id)    
-      res.status(200).json(u_id, u_nickname, p_ids);
 
+        // 로그인 성공 후 즐겨찾기 데이터를 가져옴
+        const selectQuery = `
+          SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
+        `;
+        const [favoriteRows] = await conn.query(selectQuery, [u_id]);
+
+        // p_id 값들을 배열로 저장
+        const p_ids = favoriteRows.map(row => row.p_id);
+
+        // 응답에 사용자 정보와 즐겨찾기 배열 포함
+        res.status(200).json({ u_id, u_nickname, favorites: p_ids });
       } else {
         res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
       }
@@ -75,6 +80,7 @@ router.post('/login', async (req, res) => {
     conn.release();
   }
 });
+
 
 router.post('/kakaologin', async (req, res) => {
   const { u_id, u_nickname } = req.body;
