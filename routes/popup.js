@@ -140,8 +140,15 @@ router.post('/toggleFavorite', async (req, res) => {
   `;
   
   const countTrueQuery = `
-    SELECT COUNT(*) as true_count FROM popupstore_interest WHERE p_id = ? AND u_interest = 'true'
+    SELECT COUNT(*) as true_count FROM popupstore_interest WHERE p_id = ? AND u_interest = 'TRUE'
   `;
+
+  const updateQuery = `
+  UPDATE popupstore_interest
+  SET u_interest = CASE WHEN u_interest = 'TRUE' THEN 'FALSE' ELSE 'true' END
+  WHERE u_id = ? AND p_id = ?
+`;
+
 
   const updateCountQuery = `
     UPDATE popupstore_interest
@@ -154,6 +161,8 @@ router.post('/toggleFavorite', async (req, res) => {
     const [rows] = await conn.query(selectQuery, [u_id, p_id]);
     
     if (rows.length > 0) {
+      //클릭한 유저의 TRUE,FALSE를 바꿈
+      await conn.query(updateQuery, [u_id, p_id] )
       // p_id가 일치하고 u_interest가 'true'인 행의 수를 셈
       const [countRows] = await conn.query(countTrueQuery, [p_id]);
       const trueCount = countRows[0].true_count;
