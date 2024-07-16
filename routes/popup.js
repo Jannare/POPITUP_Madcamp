@@ -23,7 +23,7 @@ router.get('/getAll', async (req, res) => {
 
   try {
     const [rows, fields] = await conn.query(selectAllQuery);
-    conn.release();
+    conn.release(); 
 
     if (rows.length > 0) {
 
@@ -144,10 +144,10 @@ router.post('/toggleFavorite', async (req, res) => {
   `;
 
   const updateQuery = `
-    UPDATE popupstore_interest
-    SET u_interest = CASE WHEN u_interest = 'TRUE' THEN 'FALSE' ELSE 'TRUE' END
-    WHERE u_id = ? AND p_id = ?
-  `;
+  UPDATE popupstore_interest
+  SET u_interest = NOT u_interest
+  WHERE u_id = ? AND p_id = ?
+`;
 
   const updateCountQuery = `
     UPDATE popupstore_interest
