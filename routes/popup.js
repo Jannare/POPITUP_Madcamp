@@ -140,7 +140,7 @@ router.post('/toggleFavorite', async (req, res) => {
   `;
   
   const countTrueQuery = `
-    SELECT COUNT(*) as true_count FROM popupstore_interest WHERE p_id = ? AND u_interest = 'TRUE'
+    SELECT COUNT(*) as true_count FROM popupstore_interest WHERE p_id = ? AND u_interest = '1'
   `;
 
   const updateQuery = `
