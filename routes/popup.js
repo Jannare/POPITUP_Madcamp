@@ -17,28 +17,9 @@ const getConn = async() => {
 
 router.get('/getAll', async (req, res) => {
   const conn = await getConn();
-  const countQuery = `
-  SELECT p_id, COUNT(*) as count
-  FROM popupstore_interest
-  WHERE p_id IN (${rows.map(row => row.p_id).join(',')})
-    AND u_interest = 'TRUE'
-  GROUP BY p_id
-`;
-// popupstore_interest 테이블에서 count를 가져옴
-const [countRows] = await conn.query(countQuery);
+  const p_id = 'SELECT '
 
-// popupstore 테이블과 popupstore_interest 테이블을 조인하여 최종 결과를 구성
-const result = rows.map(row => {
-  const matchingCountRow = countRows.find(countRow => countRow.p_id === row.p_id);
-  return {
-    ...row,
-    p_interest: matchingCountRow ? matchingCountRow.count : 0
-  };
-});
-
-conn.release();
-
-
+  const selectAllQuery = 'SELECT * FROM popupstore';
 
   try {
     const [rows, fields] = await conn.query(selectAllQuery);
@@ -46,7 +27,7 @@ conn.release();
 
     if (rows.length > 0) {
 
-      res.status(200).send(result); // 전체 데이터 전송
+      res.status(200).send(rows); // 전체 데이터 전송
     } else {
       res.status(404).send({ message: 'No records found' });
     }
