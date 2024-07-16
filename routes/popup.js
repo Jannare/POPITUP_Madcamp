@@ -1,3 +1,4 @@
+const { count } = require('console');
 var express = require('express');
 var router = express.Router();
 const mysql = require('mysql2/promise');
@@ -113,15 +114,32 @@ router.post('/checkFavorite', async (req, res) => {
   const selectQuery = `
     SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
   `;
+  const selectPopup = `
+    SELECT p_id, count FROM popupstore_interest WHERE p_id = ?
+  `;
+  const updateCountQuery = `
+    UPDATE popupstore SET p_interest = ? WHERE p_id = ?
+  `;
 
   try {
     const [rows] = await conn.query(selectQuery, [u_id]);
-    
+
     if (rows.length > 0) {
       const p_ids = rows.map(row => row.p_id);
-      const response = { p_id: p_ids };
       
-      res.status(200).json(response);
+      // Fetch p_interest from popupstore for each p_id
+      for (const p_id of p_ids) {
+        const [popupRows] = await conn.query(selectPopup, [p_id]);
+        
+        if (popupRows.length > 0) {
+          const count = popupRows[0].count;
+          
+          // Update count in popupstore_interest with p_interest value
+          await conn.query(updateCountQuery, [count, p_id]);
+        }
+      }
+      
+      res.status(200).json({ message: 'Counts updated successfully' });
     } else {
       res.status(404).json({ message: 'No records found' });
     }
@@ -132,6 +150,7 @@ router.post('/checkFavorite', async (req, res) => {
     conn.release();
   }
 });
+
 
 router.post('/region', async (req, res) => {
   const { p_region } = req.body;
