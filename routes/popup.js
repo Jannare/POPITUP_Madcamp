@@ -32,8 +32,11 @@ const KAKAO_API_KEY = '3e9a83b203985c6d92f54d2cf7ac3529'; // 여기에 발급받
 const getLatLong = async (address) => {
   const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
   const headers = {
-    'Authorization': `KakaoAK ${KAKAO_API_KEY}`
-  };
+    'Authorization': 'KakaoAK 3e9a83b203985c6d92f54d2cf7ac3529',
+    'os': 'web',
+    'origin': 'localhost'
+};
+
 
   try {
     const coordinate = await axios.get(url, { headers });
