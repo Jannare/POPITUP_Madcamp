@@ -1,10 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const mysql = require('mysql2/promise');
 const axios = require('axios');
-const path = require('path');
-const multer =require('multer');
-
+require('dotenv').config();
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -28,21 +26,25 @@ async function getResponseFromGemini(message) {
     });
     return response.data;
   } catch (error) {
-    console.error('Error communicating with Gemini API:', error);
+    console.error('Error communicating with Gemini API:', error.response ? error.response.data : error.message);
     return null;
   }
 }
 
 router.post('/chat', async (req, res) => {
-    const userMessage = req.body.message;
-  
-    const geminiResponse = await getResponseFromGemini(userMessage);
-  
-    if (geminiResponse) {
-      res.json({ response: geminiResponse });
-    } else {
-      res.status(500).json({ error: 'Failed to get response from Gemini API' });
-    }
-  });
-  
+  const userMessage = req.body.message;
+
+  // 로그 추가
+  console.log('Received message:', userMessage);
+  console.log('Using API Key:', geminiAPIKey);
+
+  const geminiResponse = await getResponseFromGemini(userMessage);
+
+  if (geminiResponse) {
+    res.json({ response: geminiResponse });
+  } else {
+    res.status(500).json({ error: 'Failed to get response from Gemini API' });
+  }
+});
+
 module.exports = router;
