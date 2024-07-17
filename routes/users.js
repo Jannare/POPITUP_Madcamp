@@ -46,10 +46,14 @@ router.post('/login', async (req, res) => {
   const { u_id, u_password } = req.body;
   const conn = await getConn();
   const query = 'SELECT u_id, u_password, u_nickname FROM Users WHERE u_id = ?';
+  const query1 = 'SELECT p_id, p_interest FROM popupstore';
+
 
   try {
     console.log('Fetching user for login');
     const [rows] = await conn.query(query, [u_id]);
+    const [rows1] = await conn.query(query1);
+
     
     if (rows.length > 0) {
       const user = rows[0];
@@ -76,7 +80,7 @@ router.post('/login', async (req, res) => {
         await conn.query(updateUserPidsQuery, [p_ids_json, u_id]);
 
         // 응답에 사용자 정보와 즐겨찾기 배열 포함
-        res.status(200).json({ u_id, u_nickname, p_ids});
+        res.status(200).json({ u_id, u_nickname, p_ids, popupstore:rows1});
       } else {
         res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
       }
