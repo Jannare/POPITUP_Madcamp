@@ -15,9 +15,12 @@ const pool = mysql.createPool({
 router.post('/register', async (req, res) => {
   const { u_id, u_password, u_nickname } = req.body;
   const conn = await getConn();
+  const query1 = 'SELECT p_id, p_interest FROM popupstore';
+
 
   try {
     console.log('Checking for existing user');
+    const [rows1] = await conn.query(query1);
     const checkQuery = 'SELECT u_id FROM Users WHERE u_id = ?';
     const [existingUser] = await conn.query(checkQuery, [u_id]);
 
@@ -27,7 +30,7 @@ router.post('/register', async (req, res) => {
       console.log('Creating new user');
       const insertQuery = 'INSERT INTO Users (u_id, u_password, u_nickname) VALUES (?, ?, ?)';
       await conn.query(insertQuery, [u_id, u_password, u_nickname]);
-      res.status(201).json({ u_id, u_nickname });
+      res.status(201).json({ u_id, u_nickname, popupstore:rows1 });
     }
   } catch (error) {
     console.error('Error creating user:', error);
@@ -104,10 +107,14 @@ router.post('/kakaologin', async (req, res) => {
   const conn = await getConn();
   const selectQuery = 'SELECT u_id, u_password, u_nickname, p_id FROM Users WHERE u_id = ?';
   const insertQuery = 'INSERT INTO Users (u_id, u_password, u_nickname) VALUES (?, ?, ?)';
+  const query1 = 'SELECT p_id, p_interest FROM popupstore';
+
 
   try {
     console.log('Fetching user for kakaologin');
     let [rows, fields] = await conn.query(selectQuery, [u_id]);
+    const [rows1] = await conn.query(query1);
+
     
     if (rows.length > 0) {
       const user = rows[0];
@@ -116,7 +123,7 @@ router.post('/kakaologin', async (req, res) => {
     } else {
       console.log('Creating new user for kakaologin');
       await conn.query(insertQuery, [u_id, u_id, u_nickname]);
-      res.status(201).json({ u_id, u_nickname });
+      res.status(201).json({ u_id, u_nickname, popupstore:rows1 });
     }
   } catch (error) {
     console.error('Error during kakaologin:', error);
@@ -125,6 +132,8 @@ router.post('/kakaologin', async (req, res) => {
     conn.release();
   }
 });
+
+
 //내가수정함
 router.post('/Favorite', async (req, res) => {
   const { u_id } = req.body;
