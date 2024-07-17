@@ -23,6 +23,7 @@ const gemini = new GoogleGenerativeAI(geminiAPIKey);
 router.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
 
+  
   // 로그 추가
   console.log('Received message:', userMessage);
 
@@ -34,8 +35,9 @@ router.post('/chat', async (req, res) => {
         const text = await response.text();
 
         if (text) {
+            res.json({respons:text})
             console.log(text);
-            return text
+            return 200
         }
 
     }
@@ -43,14 +45,9 @@ router.post('/chat', async (req, res) => {
     catch (error){
         console.error(`서버 에러가 발생했습니다: ${error}`);
     }
+    chat(userMessage);
 
 }
-  chat(userMessage) = geminiResponse
-  if (geminiResponse) {
-    res.json({ response: geminiResponse });
-  } else {
-    res.status(500).json({ error: 'Failed to get response from Gemini API' });
-  }
 });
 
 module.exports = router;
