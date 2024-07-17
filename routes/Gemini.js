@@ -59,7 +59,17 @@ router.post('/chat', async (req, res) => {
                 res.status(500).send({ error: 'No response from generative model' });
             }
         } else {
-            res.status(404).send({ message: 'No related popupstore names found.' });
+            const model = gemini.getGenerativeModel({ model: 'gemini-pro' });
+            const result = await model.generateContent(userMessage);
+            const response = await result.response;
+            const text = await response.text();
+            
+            if (text) {
+                console.log('Generated response:', text);
+                res.status(200).send({ response: text });
+            } else {
+                res.status(500).send({ error: 'No response from generative model' });
+            }
         }
     } catch (error) {
         console.error('서버 에러가 발생했습니다:', error);
