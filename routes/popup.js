@@ -27,30 +27,29 @@ const getConn = async() => {
   return await pool.getConnection(async (conn) => conn);
 };
 
-const KAKAO_API_KEY = '3e9a83b203985c6d92f54d2cf7ac3529'; // 여기에 발급받은 카카오 API 키를 입력하세요
-
-const getLatLong = async (address) => {
+async function getLatLong(address) {
+  const apiKey = 'aaceda4bf7b6797934ac54cf9a2065b7'; // Replace with your actual API key
   const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
-  const headers = {
-    'Authorization': 'KakaoAK 3e9a83b203985c6d92f54d2cf7ac3529',
-    'os': 'web',
-    'origin': 'localhost'
-};
-
 
   try {
-    const coordinate = await axios.get(url, { headers });
-    if (coordinate.data.documents.length > 0) {
-      const { x, y } = coordinate.data.documents[0].address;
-      return { latitude: y, longitude: x };
-    } else {
-      return null;
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `KakaoAK ${apiKey}`,
+        'os': 'web',
+        'origin': 'localhost'
+      }
+    });
+    const data = response.data;
+    if (data.documents.length > 0) {
+      const { x, y } = data.documents[0].address;
+      return { longitude: x, latitude: y };
     }
+    throw new Error('No coordinates found');
   } catch (error) {
     console.error('Error fetching coordinates:', error);
     throw new Error('Failed to fetch coordinates');
   }
-};
+}
 
 
 router.get('/getAll', async (req, res) => {
