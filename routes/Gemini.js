@@ -33,7 +33,7 @@ async function getResponseFromGemini(message) {
   }
 }
 
-app.post('/chat', async (req, res) => {
+router.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
   
     const geminiResponse = await getResponseFromGemini(userMessage);
