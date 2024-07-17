@@ -16,7 +16,7 @@ router.post('/register', async (req, res) => {
   const { u_id, u_password, u_nickname } = req.body;
   const conn = await getConn();
   const query1 = 'SELECT p_id, p_interest FROM popupstore';
-
+  p_ids = null
 
   try {
     console.log('Checking for existing user');
@@ -30,7 +30,7 @@ router.post('/register', async (req, res) => {
       console.log('Creating new user');
       const insertQuery = 'INSERT INTO Users (u_id, u_password, u_nickname) VALUES (?, ?, ?)';
       await conn.query(insertQuery, [u_id, u_password, u_nickname]);
-      res.status(201).json({ u_id, u_nickname, popupstore:rows1 });
+      res.status(201).json({ u_id, u_nickname, p_ids, popupstore:rows1 });
     }
   } catch (error) {
     console.error('Error creating user:', error);
