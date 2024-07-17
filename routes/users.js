@@ -16,10 +16,16 @@ router.post('/register', async (req, res) => {
   const { u_id, u_password, u_nickname } = req.body;
   const conn = await getConn();
   const query1 = 'SELECT p_id, p_interest FROM popupstore';
-  p_ids = [];
+  
+  const p_ids_json = JSON.stringify(p_ids);
+  
+  
+  
+
 
   try {
     console.log('Checking for existing user');
+    
     const [rows1] = await conn.query(query1);
     const checkQuery = 'SELECT u_id FROM Users WHERE u_id = ?';
     const [existingUser] = await conn.query(checkQuery, [u_id]);
@@ -28,7 +34,19 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: '이미 존재하는 ID입니다. 다른 ID를 사용해주세요.' });
     } else {
       console.log('Creating new user');
+      
+      const updateUserPidsQuery = `
+      UPDATE Users SET p_id = ? WHERE u_id = ?
+      `;
+
+      const selectQuery = `
+      SELECT p_id FROM popupstore_interest WHERE u_id = ? AND u_interest = 1
+    `;
+      const [favoriteRows] = await conn.query(selectQuery, [u_id]);
+      const p_ids = favoriteRows.map(row => row.p_id);
       const insertQuery = 'INSERT INTO Users (u_id, u_password, u_nickname) VALUES (?, ?, ?)';
+      await conn.query(updateUserPidsQuery, [p_ids_json, u_id]);
+
       await conn.query(insertQuery, [u_id, u_password, u_nickname]);
       res.status(201).json({ u_id, u_nickname, p_ids, popupstore:rows1 });
     }
