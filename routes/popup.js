@@ -253,6 +253,12 @@ router.post('/toggleFavorite', async (req, res) => {
     SET count = ?
     WHERE p_id = ?
   `;
+  const updateCountQuery2 = `
+    UPDATE popupstore
+    SET p_interest = ?
+    WHERE p_id = ?
+  `;
+
 
   const insertQuery = `
     INSERT INTO popupstore_interest (u_id, p_id, u_interest, count)
@@ -275,8 +281,10 @@ router.post('/toggleFavorite', async (req, res) => {
     const [countRows] = await conn.query(countTrueQuery, [p_id]);
     const trueCount = countRows[0].true_count;
 
+
     // count 값을 업데이트
     await conn.query(updateCountQuery, [trueCount, p_id]);
+    await conn.query(updateCountQuery2, [trueCount, p_id]);
 
     // 변경된 레코드를 다시 선택
     const [updatedRows] = await conn.query(selectQuery, [u_id, p_id]);
