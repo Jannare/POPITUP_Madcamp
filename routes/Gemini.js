@@ -35,7 +35,7 @@ router.post('/chat', async (req, res) => {
         const text = await response.text();
 
         if (text) {
-            res.json({respons:text})
+            res.status(200).send(text); // 전체 데이터 전송
             console.log(text);
             return 200
         }
