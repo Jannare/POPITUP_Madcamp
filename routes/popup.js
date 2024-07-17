@@ -433,7 +433,7 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
 
   try {
     // 주소로부터 위도와 경도 가져오기
-    const { latitude, longitude } = await getLatLong(p_location);
+    const { latitude, longitude } = await getLatLong(p_simplelocation);
 
     console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region, latitude, longitude); // 콘솔에 출력
 
