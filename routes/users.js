@@ -96,8 +96,9 @@ router.post('/login', async (req, res) => {
 
 router.post('/kakaologin', async (req, res) => {
   const { u_id, u_nickname } = req.body;
+  console.log(u_id, u_nickname);
   const conn = await getConn();
-  const selectQuery = 'SELECT u_id, u_password, u_nickname FROM Users WHERE u_id = ?';
+  const selectQuery = 'SELECT u_id, u_password, u_nickname, p_id FROM Users WHERE u_id = ?';
   const insertQuery = 'INSERT INTO Users (u_id, u_password, u_nickname) VALUES (?, ?, ?)';
 
   try {
@@ -106,8 +107,8 @@ router.post('/kakaologin', async (req, res) => {
     
     if (rows.length > 0) {
       const user = rows[0];
-      const { u_id, u_nickname } = user;
-      res.status(200).json({ u_id, u_nickname });
+      const { u_id, u_nickname, p_id } = user;
+      res.status(200).json({ u_id, u_nickname, p_id });
     } else {
       console.log('Creating new user for kakaologin');
       await conn.query(insertQuery, [u_id, u_id, u_nickname]);

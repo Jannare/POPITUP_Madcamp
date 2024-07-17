@@ -46,6 +46,7 @@ router.post('/chat', async (req, res) => {
         console.error(`서버 에러가 발생했습니다: ${error}`);
     }
     chat(userMessage);
+    
 
 }
 });
