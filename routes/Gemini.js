@@ -3,6 +3,9 @@ const router = express.Router();
 const mysql = require('mysql2/promise');
 const axios = require('axios');
 require('dotenv').config();
+const {GoogleGenerativeAI} = require('@google/generative-ai');
+const { text } = require('stream/consumers');
+
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -13,38 +16,30 @@ const pool = mysql.createPool({
 });
 
 const geminiAPIKey = process.env.GEMINI_API_KEY;
+const gemini = new GoogleGenerativeAI(geminiAPIKey);
 
-async function getResponseFromGemini(message) {
-  try {
-    const response = await axios.post('https:/api.gemini.com/v1/order/new', {
-      message: message
-    }, {
-      headers: {
-        'Authorization': `Bearer ${geminiAPIKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error communicating with Gemini API:', error.response ? error.response.data : error.message);
-    return null;
-  }
-}
 
 router.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
 
   // 로그 추가
   console.log('Received message:', userMessage);
-  console.log('Using API Key:', geminiAPIKey);
 
-  const geminiResponse = await getResponseFromGemini(userMessage);
+  try{
+    const model = gemini.getGenerativeModel({model: 'gemini-pro'});
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = await response.text();
+    
+    if (text) {
+        console.log(text);
+        res.json({text});
+        return 200
+    } 
 
-  if (geminiResponse) {
-    res.json({ response: geminiResponse });
-  } else {
-    res.status(500).json({ error: 'Failed to get response from Gemini API' });
-  }
+} catch (error){
+    console.error(`서버 에러가 발생했습니다: ${error}`);
+}
 });
 
 module.exports = router;
