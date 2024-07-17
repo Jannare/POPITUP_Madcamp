@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const mysql = require('mysql2/promise');
+const axios = require('axios');
 const path = require('path');
 const multer =require('multer');
 
@@ -25,6 +26,29 @@ const upload = multer({ storage: storage });
 const getConn = async() => {
   return await pool.getConnection(async (conn) => conn);
 };
+
+const KAKAO_API_KEY = '3e9a83b203985c6d92f54d2cf7ac3529'; // 여기에 발급받은 카카오 API 키를 입력하세요
+
+const getLatLong = async (address) => {
+  const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
+  const headers = {
+    'Authorization': `KakaoAK ${KAKAO_API_KEY}`
+  };
+
+  try {
+    const coordinate = await axios.get(url, { headers });
+    if (coordinate.data.documents.length > 0) {
+      const { x, y } = coordinate.data.documents[0].address;
+      return { latitude: y, longitude: x };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching coordinates:', error);
+    throw new Error('Failed to fetch coordinates');
+  }
+};
+
 
 router.get('/getAll', async (req, res) => {
   const conn = await getConn();
@@ -390,8 +414,6 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
     p_status = '종료';
   }
 
-
-
   let p_region = null;
   if (p_location.includes('서울')) {
     p_region = '서울특별시';
@@ -406,41 +428,39 @@ router.post('/store/post', upload.single('p_image'), async (req, res) => {
   } else if (p_location.includes('부산')) {
     p_region = '부산광역시';
   } 
-  let p_latitude = null;
-  let p_longitude = null;
-
-
-  console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region); // 콘솔에 출력
-  
-  const conn = await getConn();
-
-
-  const selectQuery = `
-    SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
-  `;
-
-  const insertQuery = `
-  INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`;
 
   try {
+    // 주소로부터 위도와 경도 가져오기
+    const { latitude, longitude } = await getLatLong(p_location);
+
+    console.log(u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, p_imageurl, p_simplelocation, p_category, p_hour, p_region, latitude, longitude); // 콘솔에 출력
+
+    const conn = await getConn();
+
+    const selectQuery = `
+      SELECT p_name, p_location FROM popupstore WHERE p_name = ? AND p_location = ? AND p_startdate = ? AND p_enddate = ?
+    `;
+
+    const insertQuery = `
+      INSERT INTO popupstore (u_id, p_name, p_location, p_startdate, p_enddate, p_status, p_intro, p_detail, p_interest, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
     const [rows] = await conn.query(selectQuery, [p_name, p_location, formattedEndDate, formattedEndDate]);
     
     if (rows.length === 0) {
-      await conn.query(insertQuery, [u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region, p_latitude, p_longitude]);
+      await conn.query(insertQuery, [u_id, p_name, p_location, formattedStartDate, formattedEndDate, p_status, p_intro, p_detail, 0, p_imageurl, p_simplelocation, p_category, p_hour, p_region, latitude, longitude]);
       res.status(201).json({ message: 'popupInfo added successfully' });
     } else {
       res.status(409).json({ message: 'popup already exists' });
     }
 
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('Error processing request:', error);
     res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    conn.release();
   }
 });
+
 
 
 
