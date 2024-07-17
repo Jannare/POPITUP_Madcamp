@@ -16,7 +16,7 @@ router.post('/register', async (req, res) => {
   const { u_id, u_password, u_nickname } = req.body;
   const conn = await getConn();
   const query1 = 'SELECT p_id, p_interest FROM popupstore';
-  p_ids = null
+  p_ids = [];
 
   try {
     console.log('Checking for existing user');
