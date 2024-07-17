@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
   const conn = await getConn();
   const query1 = 'SELECT p_id, p_interest FROM popupstore';
   
-  const p_ids_json = JSON.stringify(p_ids);
+  
   
   
   
@@ -45,6 +45,7 @@ router.post('/register', async (req, res) => {
       const [favoriteRows] = await conn.query(selectQuery, [u_id]);
       const p_ids = favoriteRows.map(row => row.p_id);
       const insertQuery = 'INSERT INTO Users (u_id, u_password, u_nickname) VALUES (?, ?, ?)';
+      const p_ids_json = JSON.stringify(p_ids);
       await conn.query(updateUserPidsQuery, [p_ids_json, u_id]);
 
       await conn.query(insertQuery, [u_id, u_password, u_nickname]);
