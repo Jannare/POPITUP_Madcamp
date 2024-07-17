@@ -9,6 +9,8 @@ const popupRouter = require('./routes/popup'); // 실제 라우터 파일 경로
 const popup_keywordsRouter = require('./routes/popup_keywords'); // 실제 라우터 파일 경로
 const bodyParser = require('body-parser');
 const cors = require('cors');
+require("dotenv").config();
+
 
 
 var app = express();
