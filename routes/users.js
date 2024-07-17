@@ -76,7 +76,7 @@ router.post('/login', async (req, res) => {
         await conn.query(updateUserPidsQuery, [p_ids_json, u_id]);
 
         // 응답에 사용자 정보와 즐겨찾기 배열 포함
-        res.status(200).json({ u_id, u_nickname, p_ids });
+        res.status(200).json({ u_id, u_nickname, p_ids});
       } else {
         res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
       }
