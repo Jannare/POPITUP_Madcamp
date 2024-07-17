@@ -16,7 +16,7 @@ const geminiAPIKey = process.env.GEMINI_API_KEY;
 
 async function getResponseFromGemini(message) {
   try {
-    const response = await axios.post('https://api.gemini.com/v1/endpoint', {
+    const response = await axios.post('https:/api.gemini.com/v1/order/new', {
       message: message
     }, {
       headers: {
