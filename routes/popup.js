@@ -404,6 +404,8 @@ const formatDate = (dateStr) => {
 
 router.post('/store/post', upload.single('p_image'), async (req, res) => {
   const {u_id, p_name, p_location, p_startdate, p_enddate, p_intro, p_detail, p_simplelocation, p_category, p_hour } = req.body;
+  console.log('p_startdate:', p_startdate, 'p_enddate:', p_enddate); // p_id 값을 터미널에 출력
+
   const p_imageurl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
   
   // 날짜 형식을 ISO 형식으로 변환
